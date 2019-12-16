@@ -6,12 +6,19 @@ declare -a gameBoard
 
 gameBoard=(_ _ _ _ _ _ _ _ _)
 
-toss=$((RANDOM%2))
+function toss(){
 
-case $toss in
+	toss=$((RANDOM%2))
 
-	0)
-		player=o;;
-	1)
-		player=x;;
-esac
+	case $toss in
+
+		0)
+			player=o
+			computer=x;;
+		1)
+			player=x
+			computer=o;;
+	esac
+
+	echo $player $computer
+}
