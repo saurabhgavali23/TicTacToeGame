@@ -53,7 +53,7 @@ function playerMove(){
 	do
 		read -p "Enter the Position $1 " pos
 
-		if (( $pos <= 9 && ${gameBoard[$(($pos-1))]}!=x && ${gameBoard[$(($pos-1))]}!=o ))
+		if (( $pos <= 9 && ${gameBoard[$pos-1]}!=x &&  ${gameBoard[$pos-1]}!=o ))
 		then
 			gameBoard[$(($pos - 1))]=$1
 			flag=false
@@ -62,20 +62,82 @@ function playerMove(){
 		changeTurn $1
 }
 
+function checkWhoWon(){
+
+	flag=false
+	row=0
+	col=0
+	diag1=0
+	diag2=2
+
+	for (( i=0;i<3;i++ ))
+	do
+		if [[ ${gameBoard[$row]} == $1 && ${gameBoard[$((row=$row+1))]} == $1 && ${gameBoard[$((row=$row+1))]} == $1 ]]
+		then
+			flag=true
+			break
+		fi
+
+		if [[ ${gameBoard[$col]} == $1 && ${gameBoard[$((col=$col+3))]} == $1 && ${gameBoard[$((col=$col+3))]} == $1 ]]
+		then
+			flag=true
+			break
+		fi
+
+		if [[ ${gameBoard[$diag1]} == $1 && ${gameBoard[$((diag1=$diag1+4))]} == $1 && ${gameBoard[$((diag1=$diag1+4))]} == $1 ]]
+		then
+			flag=true
+			break
+		fi
+
+		if [[ ${gameBoard[$diag2]} == $1 && ${gameBoard[$((diag2=$diag2+2))]} == $1 && ${gameBoard[$((diag2=$diag2+2))]} == $1 ]]
+		then
+			flag=true
+			break
+		fi
+		row=$(( ($i + 1) * 3 ))
+		col=$(( $i + 1 ))
+	done
+		echo $flag
+}
+
 function main(){
+
+	status=flag
 
 	read play1 play2 < <( toss )
 
-	for (( i=0;i<9; i++ ))
+	echo "Player1 $play1"
+	echo "Player2 $play2"
+
+	for (( j=0;j<${#gameBoard[@]};j++ ))
 	do
 		if [[ $play1 == $changeTurn ]]
 		then
 			playerMove $play1
+			printBoard
+			status=$( checkWhoWon $play1 )
+			if [[ $status == true ]]
+			then
+					echo "Player 1 is Won"
+					break
+			fi
 		else
 			playerMove $play2
-		fi
 			printBoard
+			status=$( checkWhoWon $play2 )
+			if [[ $status == true ]]
+			then
+					echo "Player 2 is Won"
+					break
+			fi
+		fi
 	done
+
+	if [[ $status == false ]]
+	then
+		echo "Game Tie.."
+	fi
 }
 
 main
