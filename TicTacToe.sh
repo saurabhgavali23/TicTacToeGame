@@ -4,6 +4,8 @@ echo "Welcome to TicTacToe Game"
 
 declare -a gameBoard
 
+changeTurn=x
+
 gameBoard=(_ _ _ _ _ _ _ _ _)
 
 function toss(){
@@ -13,10 +15,24 @@ function toss(){
 	case $toss in
 
 		0)
-			echo o;;
+			player1=o
+			player2=x;;
 		1)
-			echo x;;
+			player1=x
+			player2=o;;
 	esac
+
+	echo $player1 $player2
+}
+
+function changeTurn(){
+
+	if [[ $1 == x ]]
+	then
+		changeTurn=o
+	else
+		changeTurn=x
+	fi
 }
 
 function printBoard(){
@@ -35,20 +51,31 @@ function playerMove(){
 	flag=true
 	while [[ $flag == true ]]
 	do
-		read -p "Enter the Position " pos
+		read -p "Enter the Position $1 " pos
 
-		if (( $pos <= 9 ))
+		if (( $pos <= 9 && ${gameBoard[$(($pos-1))]}!=x && ${gameBoard[$(($pos-1))]}!=o ))
 		then
 			gameBoard[$(($pos - 1))]=$1
 			flag=false
 		fi
 	done
+		changeTurn $1
 }
 
 function main(){
 
-	playerMove $( toss )
-	printBoard
+	read play1 play2 < <( toss )
+
+	for (( i=0;i<9; i++ ))
+	do
+		if [[ $play1 == $changeTurn ]]
+		then
+			playerMove $play1
+		else
+			playerMove $play2
+		fi
+			printBoard
+	done
 }
 
 main
