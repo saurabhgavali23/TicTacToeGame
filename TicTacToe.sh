@@ -265,6 +265,20 @@ function checkCorner(){
 		fi
 	done
 
+	if [[ $flag == true ]]
+	then
+		checkCenter $1 $2
+	fi
+		changeTurn $2
+}
+
+function center(){
+
+	if [[ ${gameBoard[4]} != $1 &&  ${gameBoard[4]} != $2 ]]
+	then
+			gameBoard[4]=$2
+	fi
+
 	changeTurn $2
 }
 function checkWhoWon(){
