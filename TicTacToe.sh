@@ -272,7 +272,7 @@ function checkCorner(){
 		changeTurn $2
 }
 
-function center(){
+function checkCenter(){
 
 	if [[ ${gameBoard[4]} != $1 &&  ${gameBoard[4]} != $2 ]]
 	then
