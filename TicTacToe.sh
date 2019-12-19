@@ -5,6 +5,7 @@ echo "Welcome to TicTacToe Game"
 declare -a gameBoard
 
 changeTurn=x
+mainFlag=false
 
 gameBoard=(_ _ _ _ _ _ _ _ _)
 
@@ -76,6 +77,178 @@ function computerMove(){
 		changeTurn $1
 }
 
+function rowBlocker(){
+
+	if [[ $1 == x ]]
+	then
+		checkForComp=o
+	else
+		checkForComp=x
+	fi
+
+	flag=true
+	for (( i=0;i<9;i+=3 ))
+	do
+		if [[ ${gameBoard[$i]} == $1 && ${gameBoard[$i+1]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i+2]} != $1 && ${gameBoard[$i+2]} != $2 && ${gameBoard[$i+2]} != $checkForComp ]]
+			then
+				gameBoard[$i+2]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		elif [[ ${gameBoard[$i]} == $1 && ${gameBoard[$i+2]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i+1]} != $1 && ${gameBoard[$i+1]} != $2 && ${gameBoard[$i+1]} != $checkForComp ]]
+			then
+				gameBoard[$i+1]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		elif [[ ${gameBoard[$i+1]} == $1 && ${gameBoard[$i+2]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i]} != $1 && ${gameBoard[$i]} != $2 && ${gameBoard[$i]} != $checkForComp ]]
+			then
+				gameBoard[$i]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		fi
+	done
+
+		if [[ $flag == true ]]
+		then
+			columnBlocker $1 $2 $checkForComp
+		fi
+		changeTurn $2
+}
+
+function columnBlocker(){
+
+	flag=true
+	for (( i=0;i<3;i++ ))
+	do
+		if [[ ${gameBoard[$i]} == $1 && ${gameBoard[$i+3]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i+6]} != $1 && ${gameBoard[$i+6]} != $2 && ${gameBoard[$i+6]} != $3 ]]
+			then
+				gameBoard[$i+6]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		elif [[ ${gameBoard[$i]} == $1 && ${gameBoard[$i+6]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i+3]} != $1 && ${gameBoard[$i+3]} != $2 && ${gameBoard[$i+3]} != $3 ]]
+			then
+				gameBoard[$i+3]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		elif [[ ${gameBoard[$i+3]} == $1 && ${gameBoard[$i+6]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i]} != $1 && ${gameBoard[$i]} != $2 && ${gameBoard[$i]} != $3 ]]
+			then
+				gameBoard[$i]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		fi
+	done
+
+	if [[ $flag == true ]]
+	then
+		diag1Blocker $1 $2 $3
+	fi
+	changeTurn $2
+}
+
+function diag1Blocker(){
+
+	flag=true
+	for (( i=0;i<9;i+=3 ))
+	do
+		if [[ ${gameBoard[$i]} == $1 && ${gameBoard[$i+4]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i+8]} != $1 && ${gameBoard[$i+8]} != $2 && ${gameBoard[$i+8]} != $3 ]]
+			then
+				gameBoard[$i+8]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		elif [[ ${gameBoard[$i]} == $1 && ${gameBoard[$i+8]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i+4]} != $1 && ${gameBoard[$i+4]} != $2 && ${gameBoard[$i+4]} != $3 ]]
+			then
+				gameBoard[$i+4]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		elif [[ ${gameBoard[$i+4]} == $1 && ${gameBoard[$i+8]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i]} != $1 && ${gameBoard[$i]} != $2 && ${gameBoard[$i]} != $3 ]]
+			then
+				gameBoard[$i]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		fi
+	done
+
+	if [[ $flag == true ]]
+	then
+		diag2Blocker $1 $2 $3
+	fi
+		changeTurn $2
+}
+
+
+function diag2Blocker(){
+
+	flag=true
+	for (( i=0;i<9;i+=3 ))
+	do
+		if [[ ${gameBoard[$i+2]} == $1 && ${gameBoard[$i+4]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i+6]} != $1 && ${gameBoard[$i+6]} != $2 && ${gameBoard[$i+6]} != $3 ]]
+			then
+				gameBoard[$i+6]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		elif [[ ${gameBoard[$i+2]} == $1 && ${gameBoard[$i+6]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i+4]} != $1 && ${gameBoard[$i+4]} != $2 && ${gameBoard[$i+4]} != $3 ]]
+			then
+				gameBoard[$i+4]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		elif [[ ${gameBoard[$i+4]} == $1 && ${gameBoard[$i+6]} == $1 ]]
+		then
+			if [[ ${gameBoard[$i+2]} != $1 && ${gameBoard[$i+2]} != $2 && ${gameBoard[$i+2]} != $3 ]]
+			then
+				gameBoard[$i+2]=$2
+				mainFlag=true
+				flag=false
+				break
+			fi
+		fi
+	done
+
+		changeTurn $2
+}
+
 function checkWhoWon(){
 
 	flag=false
@@ -117,7 +290,7 @@ function checkWhoWon(){
 
 function main(){
 
-	status=flag
+	status=false
 
 	read player computer < <( toss )
 
@@ -137,14 +310,22 @@ function main(){
 					break
 			fi
 		else
-			computerMove $computer
-			printBoard
+			rowBlocker $computer $computer
 			status=$( checkWhoWon $computer )
 			if [[ $status == true ]]
 			then
+					printBoard
 					echo "computer is Won"
 					break
+			else
+					rowBlocker $player $computer
 			fi
+
+			if [[ $mainFlag == false ]]
+			then
+				computerMove $computer
+			fi
+				printBoard
 		fi
 	done
 
