@@ -64,19 +64,6 @@ function playerMove(){
 		changeTurn $1
 }
 
-function computerMove(){
-
-	computerPos=$(( RANDOM%9 ))
-
-	if [[ ${gameBoard[$computerPos]} == x ]] || [[ ${gameBoard[$computerPos]} == o ]]
-	then
-		computerMove $1
-	else
-		gameBoard[$computerPos]=$1
-	fi
-		changeTurn $1
-}
-
 function rowBlocker(){
 
 	if [[ $1 == x ]]
@@ -171,7 +158,7 @@ function columnBlocker(){
 function diag1Blocker(){
 
 	flag=true
-	for (( i=0;i<9;i+=3 ))
+	for (( i=0;i<6;i+=3 ))
 	do
 		if [[ ${gameBoard[$i]} == $1 && ${gameBoard[$i+4]} == $1 ]]
 		then
@@ -214,7 +201,7 @@ function diag1Blocker(){
 function diag2Blocker(){
 
 	flag=true
-	for (( i=0;i<9;i+=3 ))
+	for (( i=0;i<6;i+=3 ))
 	do
 		if [[ ${gameBoard[$i+2]} == $1 && ${gameBoard[$i+4]} == $1 ]]
 		then
@@ -281,7 +268,7 @@ function checkCenter(){
 		flag=false
 	fi
 
-	if [[ flag == true ]]
+	if [[ $flag == true ]]
 	then
 			checkSides $1 $2
 	fi
@@ -298,7 +285,6 @@ function checkSides(){
 			if [[ ${gameBoard[$i]} != $1 &&  ${gameBoard[$i]} != $2 ]]
 			then
 				gameBoard[$i]=$2
-				flag=false
 				break
 			fi
 		fi
